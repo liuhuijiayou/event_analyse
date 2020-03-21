@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- resultType="java.util.Map" -->
+<mapper namespace="com.hui.eventanalyse.dao.relatewordMapper" >
+
+    <select id="relateword_id" resultType="com.hui.eventanalyse.model.relatewordModel">
+        SELECT * FROM co_ccurrence_word WHERE word_1=#{word} order by co_num desc limit #{num};
+    </select>
+    <select id="relateword_all" resultType="com.hui.eventanalyse.model.relatewordModel">
+        SELECT T.word_1,T.word_2,T.co_num FROM(
+        SELECT word_1,word_2,co_num,row_number()over(partition by word_1 order by co_num desc) r
+        FROM co_ccurrence_word WHERE word_1 in(
+        select tt.word FROM (select * FROM wordcount ORDER BY count desc limit 20)as tt)) T
+        WHERE T.r &lt; 10;
+    </select>
+
+</mapper>

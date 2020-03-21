@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- resultType="java.util.Map" -->
+<mapper namespace="com.hui.eventanalyse.dao.RelateEntityMapper" >
+
+    <select id="relateentity_id" resultType="com.hui.eventanalyse.model.RelateEntityModel">
+        SELECT * FROM co_ccurrence_matrix WHERE entity_1=#{word} and entity_2_type=#{type} order by co_num desc limit #{num};
+    </select>
+
+    <select id="relateentity_all" resultType="com.hui.eventanalyse.model.RelateEntityModel">
+        SELECT T.entity_1,T.entity_1_type,T.entity_2,T.entity_2_type,T.co_num FROM(
+        SELECT entity_1,entity_1_type,entity_2,entity_2_type,co_num,row_number()over(partition by entity_1 order by co_num desc) r
+        FROM co_ccurrence_matrix WHERE entity_1 in(
+        select tt.word FROM (select * FROM wordcount ORDER BY count desc limit 20)as tt)) T
+        WHERE T.r &lt; 10;
+    </select>
+
+</mapper>
